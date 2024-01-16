@@ -1,0 +1,97 @@
+body {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.section {
+    max-width: fit-content;
+    margin-left: .5rem;
+    margin-right: .5rem;
+}
+
+.btn {
+    width: auto;
+    height: 5rem;
+    font-size: larger;
+}
+
+img {
+    width: 100%;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 33%);
+    grid-template-rows: repeat(4, auto);
+    max-width: 300px;
+    overflow: hidden;
+}
+
+.inputDisplay {
+    font-size: 2rem;
+    padding-right: 1rem;
+    text-align: end;
+    min-width: 0px;
+    height: 5rem;
+}
+
+/* SECCIO IMPORT */
+div.importContainer button {
+    margin: .25em;
+    border-radius: 1rem;
+}
+
+div.importContainer input {
+    border-radius: 1rem;
+    grid-column-start: span 3;
+}
+
+/* SECCIO PAGAMENT */
+.pagamentContainer {
+    grid-template-columns: repeat(4, 25%);
+}
+
+div.pagamentContainer button {
+    margin: .1em;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+}
+
+div.pagamentContainer .half {
+    grid-column-start: span 2;
+}
+
+div.pagamentContainer input {
+    margin-top: .5rem;
+    grid-column-start: span 4;
+}
+
+
+/* SECCIO CANVI */
+div.canviContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* SECCIO CAIXA */
+div.caixaContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+div.caixaContainer label {
+    max-width: 10rem;
+}
+
+div.caixaContainer input {
+    max-width: fit-content;
+    min-width: 0;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.caixaContainer img {
+    height: 2rem;
+}

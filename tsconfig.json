@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "sourceMap": true,
+        "noEmitOnError": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "strict": true,
+        "removeComments": true,
+        "outDir": "./dist/js",
+        "allowJs": true
+    },
+    "include": [
+        "src/ts/*.ts"
+    ]
+}
