@@ -81,7 +81,12 @@ div.caixaContainer {
 }
 
 div.caixaContainer label {
-    max-width: 10rem;
+    max-width: 8rem;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: .5rem;
 }
 
 div.caixaContainer input {
@@ -93,5 +98,8 @@ div.caixaContainer input {
 }
 
 div.caixaContainer img {
-    height: 2rem;
+    max-width: 100%;
+    max-height: 4rem;
+    width: auto;
+    height: auto;
 }
