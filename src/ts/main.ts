@@ -17,6 +17,12 @@ function importInput(e: Event): void {
     return;
 }
 
+function pagamentInput(e: Event): void {
+
+    let inputValue = $((e.currentTarget as HTMLInputElement)).data("value")
+    console.log("Afegit al pagament: " + inputValue)
+}
+
 
 // this function grabs a value (displayed value) and parses it to check wether to add a number, a commma or delete a number.
 function parseValueString(value: string, input: string): string {
@@ -77,3 +83,4 @@ function updateImportDisplay() {
 
 
 $(".importContainer button").on("click", importInput)
+$(".pagamentContainer button").on("click", pagamentInput)
