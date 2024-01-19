@@ -69,10 +69,6 @@ div.pagamentContainer input {
 
 
 /* SECCIO CANVI */
-div.canviContainer {
-    display: flex;
-    flex-wrap: wrap;
-}
 
 /* SECCIO CAIXA */
 div.caixaContainer {

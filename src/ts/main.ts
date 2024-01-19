@@ -1,7 +1,7 @@
 /// <reference path ="../../node_modules/@types/jquery/JQuery.d.ts"/>
 
 let importValue: string = ""
-let pagamentValue: string = ""
+let pagamentValue: string = "0"
 
 // called when import button is pressed
 function importInput(e: Event): void {
@@ -17,10 +17,11 @@ function importInput(e: Event): void {
     return;
 }
 
+// called when pagament is added to the total payed
 function pagamentInput(e: Event): void {
-
     let inputValue = $((e.currentTarget as HTMLInputElement)).data("value")
-    console.log("Afegit al pagament: " + inputValue)
+    pagamentValue = (parseInt(pagamentValue) + parseInt(inputValue)).toString()
+    updatePagamentDisplay()
 }
 
 
@@ -79,7 +80,34 @@ function updateImportDisplay() {
     let importValueNumber = Number(importValue) || 0
     let importValueFormatted = importValueNumber.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
     $(".importContainer input").val(importValueFormatted)
+    $(".canviContainer p:nth-of-type(1) span").text(importValueFormatted)
 }
+
+function updatePagamentDisplay() {
+    // we grab the pagamentValue and format it to display as a number with € symbol behind
+    let pagamentValueNumber = Number(pagamentValue) / 100 || 0
+    let pagamentValueFormatted = pagamentValueNumber.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
+    $(".pagamentContainer input").val(pagamentValueFormatted)
+    $(".canviContainer p:nth-of-type(2) span").text(pagamentValueFormatted)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 $(".importContainer button").on("click", importInput)
