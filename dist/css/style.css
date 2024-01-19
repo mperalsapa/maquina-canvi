@@ -73,13 +73,20 @@ div.canviContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    max-width: 300px;
+    width: 300px;
 }
 
 div.canviContainer img {
     max-height: 4rem;
     height: auto;
     width: auto;
+}
+
+div.canviSection button {
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
 }
 
 /* SECCIO CAIXA */

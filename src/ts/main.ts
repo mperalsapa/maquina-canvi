@@ -1,8 +1,9 @@
 /// <reference path ="../../node_modules/@types/jquery/JQuery.d.ts"/>
 
 let importValue: string = ""
-let pagamentValue: string = "0"
-let canModifyImport: boolean = true    // this variable controlls wether we can modify the import value or not
+
+let pagamentItems: CaixaItem[] = []
+let canReset: boolean = true    // this variable controlls wether we can modify the import value or not
 
 type CaixaItem = {
     value: number,
@@ -12,16 +13,14 @@ const caixa: CaixaItem[] = [] // this variable stores the number of each coin an
 
 // called when import button is pressed
 function importInput(e: Event): void {
-    if (!canModifyImport) {
-        alert("No es pot modificar l'import, el pagament está en procés.")
-        return;
-    }
     let input = (e.target as HTMLInputElement).textContent || ""
 
     let parsedInput: string = parseValueString(importValue, input);
     if (parsedInput == "") {
         return;
     }
+
+
 
     importValue = parsedInput;
     updateImportDisplay();
@@ -30,20 +29,25 @@ function importInput(e: Event): void {
 
 // called when pagament is added to the total payed
 function pagamentInput(e: Event): void {
-    if (!canModifyImport) {
-        canModifyImport = false;
-        $(".importContainer button").prop("disabled", true)
-    }
 
     let inputValue = $((e.currentTarget as HTMLInputElement)).data("value")
-    pagamentValue = (parseInt(pagamentValue) + parseInt(inputValue)).toString()
+
+    caixa.forEach((item) => {
+        if (item.value == inputValue) {
+            let pagamentItem = pagamentItems.find((pagamentItem) => { return pagamentItem.value == inputValue; })
+            if (pagamentItem) {
+                pagamentItem.quantity += 1
+            } else {
+                pagamentItems.push({ value: item.value, quantity: 1 })
+            }
+        }
+    })
+
     updatePagamentDisplay()
     if (calculateCanvi() >= 0) {
         updateCanviDisplay()
-        calculateCanviCaixa()
-        updateCaixaInputValues()
-        $(".pagamentContainer button").prop("disabled", true)
     }
+
 }
 
 // this function grabs a value (displayed value) and parses it to check wether to add a number, a commma or delete a number.
@@ -55,6 +59,10 @@ function parseValueString(value: string, input: string): string {
 
     // if input is "delete" we remove last character in case that length is superior to 0
     if (input == "⌫") {
+        if (canReset) {
+            resetState()
+            return "";
+        }
         // if import value has any character
         if (parsedInput.length > 1) {
             // lastly we check if the last character is a decimal, in which case we remove 2 characters
@@ -99,7 +107,7 @@ function parseValueString(value: string, input: string): string {
 function calculateCanvi() {
     // we grab the importValue and pagamentValue and parse them to numbers
     let importValueNumber = Number(importValue) * 100 || 0
-    let pagamentValueNumber = Number(pagamentValue) || 0
+    let pagamentValueNumber = getPagamentValue()
     return (pagamentValueNumber - importValueNumber)
 }
 
@@ -148,14 +156,23 @@ function updateImportDisplay() {
     $(".canviSection p:nth-of-type(1) span").text(importValueFormatted)
 }
 
+function getPagamentValue() {
+    let pagamentValue = 0;
+    pagamentItems.forEach((item) => {
+        pagamentValue += item.value * item.quantity
+    })
+    return pagamentValue;
+}
+
 // this function grabs the pagamentValue and formats it to display as a number with € symbol behind
 function updatePagamentDisplay() {
-    let pagamentValueNumber = Number(pagamentValue) / 100 || 0
+    let pagamentValueNumber = getPagamentValue() / 100;
     let pagamentValueFormatted = pagamentValueNumber.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
     $(".pagamentContainer input").val(pagamentValueFormatted)
     $(".canviSection p:nth-of-type(2) span").text(pagamentValueFormatted)
 }
 
+// this function grabs the canviValue and formats it to display as a number with € symbol behind
 function updateCanviDisplay() {
     let canviValue = calculateCanvi() / 100
     let canviValueFormatted = canviValue.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
@@ -164,6 +181,14 @@ function updateCanviDisplay() {
 
 // this function grabs values from stored caixa and updates the values in the user interface (input fields)
 function updateCaixaInputValues() {
+    pagamentItems.forEach((item) => {
+        let caixaItem = caixa.find((caixaItem) => {
+            return caixaItem.value == item.value
+        })
+        if (caixaItem) {
+            caixaItem.quantity += item.quantity
+        }
+    })
     caixa.forEach((item) => {
         $(".caixaContainer label input[name=" + item.value + "]").val(item.quantity)
     })
@@ -185,6 +210,34 @@ function displayChangeItems(items: number[]) {
     })
 }
 
+function makePayment() {
+    if (calculateCanvi() < 0) {
+        alert("El pagament no es suficient")
+        return
+    }
+
+    canReset = true
+    calculateCanviCaixa()
+    updateCaixaInputValues()
+
+    disableImportButtons()
+    disablePagamentButtons()
+    disableCanviSectionButtons()
+}
+
+function resetState() {
+    importValue = ""
+    pagamentItems = []
+    canReset = false
+    $(".canviContainer img").remove()
+    updateImportDisplay()
+    updatePagamentDisplay()
+    updateCanviDisplay()
+    enableImportButtons()
+    enablePagamentButtons()
+    enableCanviSectionButtons()
+}
+
 // this function grabs the values from the caixa and stores them to later use them to calculate the change
 function initCaixa() {
     $(".caixaContainer label input").each(function (index) {
@@ -199,9 +252,30 @@ function initCaixa() {
 }
 
 
+function disableImportButtons() {
+    $(".importContainer button").prop("disabled", true)
+    $(".importContainer button").last().prop("disabled", false)
+}
 
+function disablePagamentButtons() {
+    $(".pagamentContainer button").prop("disabled", true)
+}
 
+function disableCanviSectionButtons() {
+    $(".canviSection button").prop("disabled", true)
+}
 
+function enableImportButtons() {
+    $(".importContainer button").prop("disabled", false)
+}
+
+function enablePagamentButtons() {
+    $(".pagamentContainer button").prop("disabled", false)
+}
+
+function enableCanviSectionButtons() {
+    $(".canviSection button").prop("disabled", false)
+}
 
 
 
@@ -218,3 +292,4 @@ initCaixa();
 
 $(".importContainer button").on("click", importInput)
 $(".pagamentContainer button").on("click", pagamentInput)
+$(".canviSection button").on("click", makePayment)
