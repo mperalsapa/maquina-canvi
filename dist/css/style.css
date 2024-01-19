@@ -69,6 +69,18 @@ div.pagamentContainer input {
 
 
 /* SECCIO CANVI */
+div.canviContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 300px;
+}
+
+div.canviContainer img {
+    max-height: 4rem;
+    height: auto;
+    width: auto;
+}
 
 /* SECCIO CAIXA */
 div.caixaContainer {
