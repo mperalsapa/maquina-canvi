@@ -375,7 +375,6 @@
     // we add event listeners to the buttons
     $(".importContainer button").on("click", importInput)
     $(".pagamentContainer button").on("click", pagamentInput)
-    $(".canviSection button").on("click", makePayment)
 
     // keyboard listeners for import input
     $(document).on("keydown", (e) => {
