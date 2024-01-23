@@ -1,10 +1,13 @@
 /// <reference path ="../../node_modules/@types/jquery/JQuery.d.ts"/>
+// Autors:
+//          - Victor Comino
+//          - Marc Peral
 
 (() => {
     let importValue: string = ""            // this variable stores the value of the import
 
     let pagamentItems: CaixaItem[] = []     // this variable stores the number of each coin and bill in the pagament
-    let canReset: boolean = true            // this variable controlls wether we can modify the import value or not
+    let canReset: boolean = false            // this variable controlls wether we can modify the import value or not
 
     type CaixaItem = {                      // this type is used to store the number of each coin and bill in the caixa
         value: number,
@@ -14,13 +17,20 @@
 
     /**
      * This function is called when the import button is pressed.
-     * It grabs the value of the button and controls wether to add a number, a comma or delete a number.
      * @param e Event that triggered the function
-     * @returns 
      */
     function importInput(e: Event): void {
         let input = (e.target as HTMLInputElement).textContent || ""
+        updateImport(input)
 
+    }
+
+    /**
+     * This function is called when the import value is modified.
+     * @param input New that will modify the value (add a number/comma or delete a number/comma)
+     * @returns void
+     */
+    function updateImport(input: string): void {
         let parsedInput: string = parseValueString(importValue, input);
         if (parsedInput == "") {
             return;
@@ -38,6 +48,8 @@
      */
     function pagamentInput(e: Event): void {
 
+        disableImportButtons()
+
         let inputValue = $((e.currentTarget as HTMLInputElement)).data("value")
 
         caixa.forEach((item) => {
@@ -54,6 +66,11 @@
         updatePagamentDisplay()
         if (calculateCanvi() >= 0) {
             updateCanviDisplay()
+
+            // load the caixa from the input fields
+            loadCaixaFields()
+            // automatically make payment
+            makePayment()
         }
     }
     /**
@@ -133,7 +150,7 @@
      * In case that there is not enough change in the caixa, it displays an alert.
      * @returns void
      */
-    function calculateCanviCaixa(): void {
+    function calculateCanviCaixa(): boolean {
         let changeValue = calculateCanvi()
         let tempCaixa: CaixaItem[] = JSON.parse(JSON.stringify(caixa))
         let changeItems: number[] = []
@@ -147,10 +164,11 @@
         })
         if (changeValue > 0) {
             alert("No hi ha prou canvi en caixa")
-            return
+            return false
         }
         updateCaixaChangeItems(changeItems)
         displayChangeItems(changeItems)
+        return true
     }
 
     /**
@@ -255,7 +273,9 @@
         }
 
         canReset = true
-        calculateCanviCaixa()
+        if (!calculateCanviCaixa()) {
+            return
+        }
         updateCaixaInputValues()
 
         disableImportButtons()
@@ -284,7 +304,10 @@
      * This function grabs the values from the caixa and stores them to later use them to calculate the change
      * @returns void
      */
-    function initCaixa(): void {
+    function loadCaixaFields(): void {
+        // we clear the caixa values
+        caixa.length = 0
+
         $(".caixaContainer label input").each(function (index) {
             let name = $(this).attr("name")
             let value = $(this).val()
@@ -303,6 +326,7 @@
     function disableImportButtons(): void {
         $(".importContainer button").prop("disabled", true)
         $(".importContainer button").last().prop("disabled", false)
+        canReset = true;
     }
 
     /**
@@ -346,10 +370,28 @@
     }
 
     // we initialize the caixa
-    initCaixa();
+    loadCaixaFields();
 
     // we add event listeners to the buttons
     $(".importContainer button").on("click", importInput)
     $(".pagamentContainer button").on("click", pagamentInput)
     $(".canviSection button").on("click", makePayment)
+
+    // keyboard listeners for import input
+    $(document).on("keydown", (e) => {
+        // if keypress is backspace or delete, we delete last character
+        if (e.key == "Backspace" || e.key == "Delete") {
+            updateImport("⌫")
+        }
+        // if keypress is comma, we add a dot
+        if (e.key == ",") {
+            updateImport(",")
+        }
+        // if keypress is a number, we add it to the import value
+        if (parseInt(e.key)) {
+            updateImport(e.key)
+        }
+    })
+
+
 })();
